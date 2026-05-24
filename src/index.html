@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;">
+  <title>NexusVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Nunito:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h1 class="logo">NexusVerse</h1>
+        <span class="project-count" id="projectCount">0 projects</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-view="dashboard">
+          <span class="nav-icon">&#9783;</span> Dashboard
+        </button>
+        <button class="nav-btn" data-view="inbox">
+          <span class="nav-icon">&#9993;</span> Brainstorm
+          <span class="badge" id="inboxBadge" style="display:none">0</span>
+        </button>
+        <button class="nav-btn" data-view="settings">
+          <span class="nav-icon">&#9881;</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-section categories-section" id="sidebarCategories">
+        <div class="sidebar-section-header">
+          <span>Categories</span>
+          <button class="sidebar-section-action" id="btnAddCategory" type="button" aria-label="Add category">+</button>
+        </div>
+        <div class="category-list" id="categoryList">
+          <div id="hiddenCategories" class="hidden-categories"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section view-section">
+        <div class="sidebar-section-header">
+          <span>View</span>
+        </div>
+        <label class="toggle-row" for="toggleLegacy">
+          <span>Show Legacy</span>
+          <input type="checkbox" id="toggleLegacy">
+          <span class="toggle-switch"></span>
+        </label>
+        <label class="toggle-row" for="toggleDone">
+          <span>Show Done</span>
+          <input type="checkbox" id="toggleDone">
+          <span class="toggle-switch"></span>
+        </label>
+        <label class="toggle-row" for="toggleSandbox">
+          <span>Show Sandbox</span>
+          <input type="checkbox" id="toggleSandbox">
+          <span class="toggle-switch"></span>
+        </label>
+      </div>
+
+      <div class="sidebar-section tools-section collapsed" id="toolsSection">
+        <button class="sidebar-section-header tools-header" id="btnToggleTools" type="button" aria-expanded="false" aria-controls="toolsContent">
+          <span>Tools</span>
+          <span class="tools-chevron" aria-hidden="true">&#8250;</span>
+        </button>
+        <div class="tools-content" id="toolsContent">
+          <button class="btn-rescan" id="btnRescan" type="button">&#8635; Rescan Projects</button>
+          <button class="backfill-footer-link" data-view="backfill" type="button">&#9881; Backfill Tool</button>
+          <button class="tool-action-btn" id="btnAddProject" type="button">+ Add Project</button>
+          <button class="tool-link-btn" id="btnRenameCategoryBulk" type="button">Rename Category</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+      <!-- Dashboard View -->
+      <div id="viewDashboard" class="view active">
+        <div class="view-header">
+          <h2>All Projects</h2>
+          <div class="toolbar-filters">
+            <select id="filterStatus">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="service">Service</option>
+              <option value="paused">Paused</option>
+              <option value="idea">Idea</option>
+              <option value="sandbox">Sandbox</option>
+              <option value="done">Done</option>
+              <option value="legacy">Legacy</option>
+              <option value="unknown">Unknown</option>
+            </select>
+            <select id="filterCategory">
+              <option value="">All Categories</option>
+            </select>
+            <select id="filterPriority">
+              <option value="">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search projects, or tag:tag-name..." />
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="projectTable">
+            <colgroup>
+              <col style="width: 15%">
+              <col style="width: 8%">
+              <col style="width: 8%">
+              <col style="width: 10%">
+              <col style="width: 11%">
+              <col style="width: 9%">
+              <col style="width: 7%">
+              <col style="width: 22%">
+              <col style="width: 10%">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="name">Name</th>
+                <th class="sortable" data-sort="status">Status</th>
+                <th class="sortable" data-sort="priority">Priority</th>
+                <th class="sortable" data-sort="category">Category</th>
+                <th class="sortable" data-sort="gitBranch">Branch</th>
+                <th class="sortable" data-sort="lastActivityDate">Last Active</th>
+                <th class="sortable" data-sort="createdDate">Created</th>
+                <th>Next Step</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="projectTableBody">
+            </tbody>
+          </table>
+        </div>
+        <div id="emptyState" style="display:none">
+          <p>No projects found. Check your config roots or hit Rescan.</p>
+        </div>
+      </div>
+
+      <!-- Project Detail View -->
+      <div id="viewDetail" class="view">
+        <div class="view-header">
+          <div class="detail-header-top">
+            <button class="btn-back" id="btnBack">&#8592; Back</button>
+            <h2 id="detailName"></h2>
+          </div>
+          <div class="detail-actions" id="detailActions"></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-meta" id="detailMeta"></div>
+          <div class="detail-content" id="detailContent"></div>
+          <div class="detail-ideas">
+            <div class="detail-tabs">
+              <button class="detail-tab-btn active" data-detail-tab="ideas">Brainstorm</button>
+              <button class="detail-tab-btn" data-detail-tab="scratchpad">Scratchpad</button>
+            </div>
+            <div class="detail-tab-panel active" id="panelIdeas">
+              <div style="padding-top:14px">
+                <div class="idea-input-row">
+                  <input type="text" id="projectIdeaInput" placeholder="Add a brainstorm for this project..." />
+                  <button id="btnAddProjectIdea" class="btn-primary">Capture</button>
+                  <label class="idea-show-completed">
+                    <input type="checkbox" id="toggleProjectCompletedIdeas" />
+                    Show completed
+                  </label>
+                </div>
+                <div id="projectIdeasList"></div>
+              </div>
+            </div>
+            <div class="detail-tab-panel" id="panelScratchpad">
+              <div style="padding-top:14px">
+                <textarea class="scratchpad-area" id="scratchpadEditor" placeholder="Quick notes, error logs, JSON, commands..."></textarea>
+                <div class="scratchpad-status" id="scratchpadStatus"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inbox View -->
+      <div id="viewInbox" class="view">
+        <div class="ix-capture">
+          <div class="ix-capture-icon">&#128161;</div>
+          <input type="text" id="globalIdeaInput" class="ix-capture-input" placeholder="What's on your mind?" />
+          <div id="ideaProjectSelect" class="ix-select ix-capture-dropdown"></div>
+          <button id="btnAddGlobalIdea" class="ix-capture-btn">Capture</button>
+        </div>
+        <div class="ix-search">
+          <span class="ix-search-icon">&#8981;</span>
+          <input type="text" id="ideaSearchInput" class="ix-search-input" placeholder="Search brainstorms... (Ctrl+F)" />
+          <span id="ideaSearchCount" class="ix-search-count"></span>
+          <button id="ideaSearchClear" class="ix-search-clear" style="display:none">&times;</button>
+        </div>
+        <div class="ix-layout">
+          <div class="ix-tabs-col">
+            <button class="ix-tab active" data-inbox-tab="all">
+              <span class="ix-tab-icon">&#9776;</span>
+              <span class="ix-tab-label">All Open</span>
+              <span class="ix-tab-count active" id="tabCountAll">0</span>
+            </button>
+            <button class="ix-tab" data-inbox-tab="byProject">
+              <span class="ix-tab-icon">&#9862;</span>
+              <span class="ix-tab-label">By Project</span>
+              <span class="ix-tab-count" id="tabCountByProject">0</span>
+            </button>
+            <button class="ix-tab" data-inbox-tab="completed">
+              <span class="ix-tab-icon">&#10003;</span>
+              <span class="ix-tab-label">Completed</span>
+              <span class="ix-tab-count" id="tabCountCompleted">0</span>
+            </button>
+          </div>
+          <div class="ix-main">
+            <div id="byProjectToolbar" class="ix-group-toolbar" style="display:none">
+              <label class="ix-toggle-label">
+                <input type="checkbox" id="includeCompletedByProject" class="ix-toggle-switch" />
+                Include completed brainstorms
+              </label>
+            </div>
+            <div id="globalIdeasList" class="ix-list"></div>
+            <div id="groupedIdeasList" class="ix-groups" style="display:none"></div>
+            <div id="completedIdeasList" class="ix-groups" style="display:none"></div>
+          </div>
+          <aside class="ix-filter-sidebar">
+            <div class="ix-fsb-section">
+              <h4 class="ix-fsb-title">Categories</h4>
+              <div id="ideaCategoryFilters"></div>
+            </div>
+            <div class="ix-fsb-section">
+              <h4 class="ix-fsb-title">Project</h4>
+              <div id="ideaProjectFilters"></div>
+            </div>
+            <div class="ix-fsb-section">
+              <h4 class="ix-fsb-title">Date</h4>
+              <div id="ideaDateFilters"></div>
+              <div id="ideaCustomDateRange" class="ix-fsb-dates" style="display:none">
+                <input type="text" id="ideaDateFrom" class="ix-date-text-input" placeholder="From dd/mm/yyyy" maxlength="10" />
+                <input type="text" id="ideaDateTo" class="ix-date-text-input" placeholder="To dd/mm/yyyy" maxlength="10" />
+              </div>
+            </div>
+            <div class="ix-fsb-section">
+              <h4 class="ix-fsb-title">Sort by</h4>
+              <div id="ideaSortFilters"></div>
+            </div>
+            <button id="ideaClearFilters" class="ix-fsb-clear" style="display:none">Clear all filters</button>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Backfill View -->
+      <div id="viewBackfill" class="view">
+        <div class="view-header">
+          <h2>Frontmatter Backfill</h2>
+          <p class="view-subtitle">Review and apply YAML frontmatter to your PROJECT_PLAN.md files. Nothing is written until you confirm.</p>
+        </div>
+        <div id="backfillLoading" style="display:none">Scanning projects...</div>
+        <div id="backfillList"></div>
+        <div id="backfillActions" style="display:none">
+          <button id="btnApplyBackfill" class="btn-primary btn-large">Apply Selected</button>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="viewSettings" class="view">
+        <div class="view-header">
+          <h2>Settings</h2>
+          <p class="view-subtitle">Edit project roots, scan behavior, ignored paths, and launch command labels stored in config.json.</p>
+        </div>
+        <div class="settings-layout">
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <h3>Project Roots</h3>
+              <button class="action-btn" id="btnAddRoot" type="button">Add Folder</button>
+            </div>
+            <div id="settingsRoots" class="settings-list"></div>
+          </section>
+
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <h3>Scan</h3>
+            </div>
+            <label class="settings-field">
+              <span>Scan depth</span>
+              <input id="settingsScanDepth" type="number" min="1" max="12" step="1" />
+            </label>
+          </section>
+
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <h3>Ignored Paths</h3>
+              <button class="action-btn" id="btnAddIgnoredPath" type="button">Add Folder</button>
+            </div>
+            <div id="settingsIgnoredPaths" class="settings-list"></div>
+          </section>
+
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <h3>Launch Commands</h3>
+            </div>
+            <label class="settings-field">
+              <span>Claude Code</span>
+              <input id="settingsLaunchClaude" type="text" />
+            </label>
+            <label class="settings-field">
+              <span>VS Code</span>
+              <input id="settingsLaunchVscode" type="text" />
+            </label>
+            <label class="settings-field">
+              <span>Terminal</span>
+              <input id="settingsLaunchTerminal" type="text" />
+            </label>
+          </section>
+
+          <section class="settings-section">
+            <div class="settings-section-header">
+              <h3>Application Logs</h3>
+            </div>
+            <div class="settings-actions inline-actions">
+              <button id="btnOpenLogFile" class="action-btn" type="button">Open Log</button>
+              <button id="btnOpenLogFolder" class="action-btn" type="button">Open Logs Folder</button>
+            </div>
+            <p class="settings-empty" id="settingsLogPath"></p>
+          </section>
+
+          <div class="settings-actions">
+            <button id="btnSaveSettings" class="btn-primary btn-large" type="button">Save Settings</button>
+            <span id="settingsSaveStatus" class="settings-save-status"></span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Dialog -->
+  <div id="modalOverlay" class="modal-overlay" style="display:none">
+    <div class="modal-dialog">
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <!-- Command Palette -->
+  <div id="cmdPalette" class="cmd-overlay" style="display:none">
+    <div class="cmd-dialog">
+      <div class="cmd-input-row">
+        <span class="cmd-icon">&#9889;</span>
+        <input type="text" id="cmdInput" class="cmd-input" placeholder="Search projects... (Enter to open, Shift+Enter for Claude Code)" autocomplete="off" />
+        <kbd class="cmd-kbd">esc</kbd>
+      </div>
+      <div id="cmdResults" class="cmd-results"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

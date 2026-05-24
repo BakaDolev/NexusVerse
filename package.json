@@ -1,0 +1,70 @@
+{
+  "name": "nexusverse",
+  "version": "1.0.0",
+  "description": "NexusVerse — project management desktop app for multi-project developers",
+  "main": "main.js",
+  "scripts": {
+    "start": "npx electron .",
+    "dev": "npx electron . --dev",
+    "build": "electron-builder --win --dir",
+    "build:installer": "electron-builder --win nsis",
+    "build:portable": "electron-builder --win portable"
+  },
+  "keywords": [
+    "project-management",
+    "electron",
+    "developer-tools"
+  ],
+  "author": "BakaDolev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BakaDolev/NexusVerse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BakaDolev/NexusVerse/issues"
+  },
+  "homepage": "https://github.com/BakaDolev/NexusVerse#readme",
+  "type": "commonjs",
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "electron": "^42.2.0",
+    "electron-builder": "^26.8.1",
+    "playwright-core": "^1.60.0"
+  },
+  "build": {
+    "appId": "com.nexusverse.app",
+    "productName": "NexusVerse",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "nexusverse.config.json"
+    ],
+    "win": {
+      "icon": "assets/NexusVerse.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "portable": {
+      "artifactName": "NexusVerse.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NexusVerse",
+      "artifactName": "NexusVerse-Setup.exe"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.env
+*.log
+
+# Project metadata (not app source)
+CLAUDE.md
+CODEX.md
+PROJECT_PLAN.md
+BRAINSTORM.md
+SCRATCHPAD.md
+MOBILE_PLAN.md
+GITHUB_RULES.md
+archive/
+
+# Local tooling
+.claude/
+.smoke/

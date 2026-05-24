@@ -1,0 +1,34 @@
+{
+  "roots": [],
+  "scanDepth": 4,
+  "ignore": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    ".next",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".cache",
+    "coverage",
+    ".output"
+  ],
+  "launch": {
+    "claudeCode": "claude",
+    "vscode": "code",
+    "terminal": "wt -d"
+  },
+  "categories": [
+    { "id": "work", "label": "Work", "color": "#4f46e5" },
+    { "id": "main", "label": "Main", "color": "#818cf8" },
+    { "id": "side-project", "label": "Side Projects", "color": "#7c3aed" },
+    { "id": "infra", "label": "Infrastructure", "color": "#0f9f8f" },
+    { "id": "legacy", "label": "Legacy", "color": "#737373" }
+  ],
+  "categoryFallbacks": {},
+  "ignoredPaths": [],
+  "pinnedProjectIds": [],
+  "showLegacy": false,
+  "showSandbox": false
+}
