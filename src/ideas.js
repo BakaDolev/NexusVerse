@@ -255,7 +255,7 @@ class IdeasManager {
   }
 
   _contentWithInsertedIdea(content, entry) {
-    const lines = content.split('\n');
+    const lines = content.replace(/\r\n/g, '\n').split('\n');
     let insertIndex = -1;
     let i = 0;
 
@@ -334,7 +334,7 @@ class IdeasManager {
   }
 
   _parseIdeas(content, options = {}) {
-    const lines = content.split('\n');
+    const lines = content.replace(/\r\n/g, '\n').split('\n');
     const ideas = [];
     const occurrenceCounts = new Map();
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -434,7 +434,7 @@ class IdeasManager {
   setIdeaType(filePath, rawLine, newType) {
     if (newType && !VALID_IDEA_TYPES.has(String(newType).toLowerCase())) return { success: false };
     if (!fs.existsSync(filePath)) return { success: false };
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
     const index = this._findIdeaLine(lines, rawLine);
     if (index === -1) return { success: false };
@@ -461,7 +461,7 @@ class IdeasManager {
 
   toggleIdea(filePath, rawLine, done) {
     if (!fs.existsSync(filePath)) return { success: false };
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
     const index = this._findIdeaLine(lines, rawLine);
     if (index === -1) return { success: false };
@@ -487,7 +487,7 @@ class IdeasManager {
 
   togglePause(filePath, rawLine) {
     if (!fs.existsSync(filePath)) return { success: false };
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
     const index = this._findIdeaLine(lines, rawLine);
     if (index === -1) return { success: false };
@@ -507,7 +507,7 @@ class IdeasManager {
 
   editIdea(filePath, rawLine, newText) {
     if (!fs.existsSync(filePath)) return { success: false };
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
     const index = this._findIdeaLine(lines, rawLine);
     if (index === -1) return { success: false };
@@ -535,7 +535,7 @@ class IdeasManager {
   moveIdeaToProject(fromFilePath, rawLine, toFilePath, projectName) {
     if (!fs.existsSync(fromFilePath)) return { success: false };
 
-    const sourceContent = fs.readFileSync(fromFilePath, 'utf-8');
+    const sourceContent = fs.readFileSync(fromFilePath, 'utf-8').replace(/\r\n/g, '\n');
     const sourceLines = sourceContent.split('\n');
     const sourceIndex = this._findIdeaLine(sourceLines, rawLine);
     if (sourceIndex === -1) return { success: false };
@@ -564,7 +564,7 @@ class IdeasManager {
     }
 
     this._ensureFile(toFilePath);
-    const destinationContent = fs.readFileSync(toFilePath, 'utf-8');
+    const destinationContent = fs.readFileSync(toFilePath, 'utf-8').replace(/\r\n/g, '\n');
     const destinationAfter = this._contentWithInsertedIdea(destinationContent, movedLine);
     const updatedSourceLines = sourceLines.filter((line, index) => index !== sourceIndex);
 
@@ -577,7 +577,7 @@ class IdeasManager {
 
   deleteIdea(filePath, rawLine) {
     if (!fs.existsSync(filePath)) return { success: false };
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
     const lines = content.split('\n');
     const index = this._findIdeaLine(lines, rawLine);
     if (index === -1) return { success: false };
